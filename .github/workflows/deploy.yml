@@ -3,6 +3,7 @@ name: Deploy site estático para S3
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
 
 permissions:
   id-token: write   # PERMITE pegar o token OIDC
