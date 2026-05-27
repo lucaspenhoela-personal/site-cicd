@@ -1,0 +1,30 @@
+name: Deploy site estático para S3
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  id-token: write   # PERMITE pegar o token OIDC
+  contents: read    # PERMITE ler o código do repo
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar credenciais AWS via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::SEU_ACCOUNT_ID:role/GitHubActionsDeployRole
+          aws-region: us-east-1
+
+      - name: Sincronizar arquivos com o bucket S3
+        run: |
+          aws s3 sync . s3://NOME_DO_BUCKET \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude "README.md" \
+            --delete
